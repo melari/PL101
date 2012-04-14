@@ -16,8 +16,7 @@ var convertPitch = function(pitch) {
 };
 
 var compileT = function(t, expr) {
-    if (expr.tag == "repeat") {
-        console.log("REPEAT");
+    if (expr.tag == "repeat") {        
         var res = [];
         for (var i = 0; i < expr.count; i++) {
             res = res.concat(compileT(t+endTime(0, expr.section)*i, expr.section));            
@@ -25,25 +24,21 @@ var compileT = function(t, expr) {
         return res;
     }
 
-    if (expr.tag == "rest") {
-        console.log("REST");
+    if (expr.tag == "rest") {        
         return [];
     }
 
-    if (expr.tag == "note") {     
-        console.log("NOTE");
+    if (expr.tag == "note") {             
         return [ { tag: "note",
                  pitch: convertPitch(expr.pitch),
                  start: t,
                    dur: expr.dur } ]; 
     }
     
-    if (expr.tag == "seq") {
-        console.log("SEQ");
+    if (expr.tag == "seq") {        
         return compileT(t, expr.left).concat(compileT(endTime(t, expr.left), expr.right));
     }
-        
-    console.log("PAR");
+            
     return compileT(t, expr.left).concat(compileT(t, expr.right));
 };
 
