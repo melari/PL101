@@ -1,0 +1,34 @@
+start =
+    whitespace? comment? value:(expression / EOF)
+      { return value; }
+
+expression =
+     atom / expressionList / quote
+     
+quote = 
+  "'" value:expression
+    { return ["quote", value]; }
+     
+spacedExpression =
+	whitespace value:(atom / expressionList)
+    	{ return value; }
+     
+expressionList =
+	"(" whitespace? first:expression rest:spacedExpression* whitespace? ")"
+    	{ return [first].concat(rest); }
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+             
+validchar
+    = [0-9a-zA-Z_?!+\=@#$%^&*/.-]
+        
+whitespace =
+    (" " / "\t" / ("\n" comment?) )*
+    
+comment =
+    ";;" (!"\n" .)* ("\n" / EOF)
+    
+EOF =
+  !.
