@@ -1,0 +1,35 @@
+first =
+   expression / ""
+  
+expression = 
+  sequence / parallel / repeat / note / rest
+  
+sequence =
+    ":" whitespace? first:expression whitespace second:expression
+    { return {tag:"seq", left:first, right:second}; }
+  
+parallel =
+    "+" whitespace? first:expression whitespace second:expression
+    { return {tag:"par", left:first, right:second}; }
+  
+repeat = 
+    "rep" whitespace num:number whitespace "{" whitespace? value:expression whitespace? "}"
+      { return {tag:"repeat", section:value, count:num}; }
+
+note = 
+  letter:letter octave:number "|" duration:number
+    { return { tag: "note", pitch: "" + letter + octave, dur: duration }; }
+    
+rest =
+  "-|" value:number
+    { return {tag:"rest", dur:value}; }
+  
+letter =
+  [a-zA-Z]
+  
+number = 
+  values:[0-9]+
+    { return parseInt(values.join("")); }
+    
+whitespace =
+    (" " / "\t" / "\n" )*
